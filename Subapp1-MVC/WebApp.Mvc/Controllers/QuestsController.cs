@@ -60,10 +60,6 @@ public class QuestsController : Controller
             ActiveSection = section,
             Filter = filter,
             NewQuest = newQuest,
-            ContinueQuests = LoadContinueQuests(filter),
-            CompletedQuests = LoadCompletedQuests(filter),
-            FeaturedQuests = LoadFeaturedQuests(filter),
-            RecommendedQuests = LoadRecommendedQuests(filter),
             ExploreQuests = section == "explore" ? await LoadExploreQuestsAsync(filter) : [],
             SavedQuests = section == "saved" ? await LoadExploreQuestsAsync(filter, savedOnly: true) : []
         };
@@ -611,29 +607,4 @@ public class QuestsController : Controller
 
         return cards;
     }
-
-    private List<QuestCardViewModel> LoadContinueQuests(QuestFilterViewModel filter)
-    {
-        // DATABASE HOOK: connect the database here. 
-        return [];
-    }
-
-    private List<QuestCardViewModel> LoadCompletedQuests(QuestFilterViewModel filter)
-    {
-        // DATABASE HOOK: connect the database here. 
-        return [];
-    }
-
-    private List<QuestCardViewModel> LoadFeaturedQuests(QuestFilterViewModel filter)
-    {
-        // DATABASE HOOK: connect the database here. 
-        return [];
-    }
-
-    private List<QuestCardViewModel> LoadRecommendedQuests(QuestFilterViewModel filter)
-    {
-        // DATABASE HOOK: connect the database here. 
-        return [];
-    }
-
 }

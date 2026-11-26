@@ -8,9 +8,5 @@ public class QuestsPageViewModel
     public CreateQuestViewModel NewQuest { get; set; } = new();
     public List<QuestListItemViewModel> MyQuests { get; set; } = [];
     public List<QuestCardViewModel> ExploreQuests { get; set; } = [];
-    public List<QuestCardViewModel> ContinueQuests { get; set; } = [];
-    public List<QuestCardViewModel> CompletedQuests { get; set; } = [];
-    public List<QuestCardViewModel> FeaturedQuests { get; set; } = [];
-    public List<QuestCardViewModel> RecommendedQuests { get; set; } = [];
     public List<QuestCardViewModel> SavedQuests { get; set; } = [];
 }
