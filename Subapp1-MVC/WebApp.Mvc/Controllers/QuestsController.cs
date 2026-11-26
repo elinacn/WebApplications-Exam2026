@@ -357,7 +357,7 @@ public class QuestsController : Controller
     }
 
     // Delete
-    [Authorize(Roles = AppRoles.Admin)]
+    [Authorize]
     public async Task<IActionResult> Delete(int? id)
     {
         if (id is null) return BadRequest();
@@ -367,16 +367,18 @@ public class QuestsController : Controller
             _logger.LogWarning("Quest {QuestId} not found for deletion", id);
             return NotFound();
         }
+        if (!CanEditQuest(quest)) return Forbid();
         return View(quest);
     }
 
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
-    [Authorize(Roles = AppRoles.Admin)]
+    [Authorize]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
         var quest = await _quests.GetByIdAsync(id);
         if (quest is null) return RedirectToAction(nameof(Quests), new { section = "create" });
+        if (!CanEditQuest(quest)) return Forbid();
 
         try
         {
@@ -440,7 +442,7 @@ public class QuestsController : Controller
             QuestionCount = q.Questions.Count,
             TotalPoints = q.Questions.Sum(x => x.Points),
             CanEdit = isAdmin || (userId.HasValue && q.CreatorUserId == userId.Value),
-            CanDelete = isAdmin
+            CanDelete = isAdmin || (userId.HasValue && q.CreatorUserId == userId.Value)
         })
         .ToList();
     }
