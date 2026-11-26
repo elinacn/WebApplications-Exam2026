@@ -63,6 +63,26 @@ and users) and `anna`, `beatrice`, … (students). Delete `WebAppApi.db` to rese
 
 ### Where things are
 
+| Requirement | Subapp 1 |
+|---|---|
+| Does not crash | `Subapp1-MVC/WebApp.Mvc/Program.cs` (`UseExceptionHandler`, `UseStatusCodePagesWithReExecute`), `Views/Shared/Error.cshtml`, `Views/Home/StatusCode.cshtml` |
+| Web UI with interactive forms | Razor views in `Subapp1-MVC/WebApp.Mvc/Views`; forms in `Views/Quests/_CreateQuestForm.cshtml`, `Views/Quests/Play.cshtml`, `Views/Users/Create.cshtml`, `Views/Courses/Create.cshtml`, `Views/Account/Login.cshtml` |
+| CRUD / 3+ entities with CRUD | Quest (`Controllers/QuestsController.cs`, `Views/Quests`), Course (`Controllers/CoursesController.cs`, `Views/Courses`), User (`Controllers/UsersController.cs`, `Views/Users`) |
+| Many-to-many | User ↔ Quest through `QuestCompletion` (best score, attempts) and `SavedQuest` (bookmarks, composite key), both in `Models`; relationships configured in `Models/SheetsDbContext.cs` |
+| Complex domain rule | `Services/QuestScoringService.cs` with `Models/DifficultyRules.cs` (XP only on first completion), `Services/DailyStreakService.cs` (daily streak), quest ownership (`CanEditQuest` in `QuestsController`: only the creator or an admin can edit or delete a quest), question rules (`ValidateQuest` in `QuestsController`, `Models/CodeAnswerChecker.cs`), last admin cannot be demoted or deleted (`UsersController`) |
+| Conditional rendering (2+ types) | `if` in `Views/Shared/_Layout.cshtml` (admin and signed-in links) and `Views/Quests/Quests.cshtml` (section and empty-list checks, edit/delete links per quest); ternary `? :` in `Views/Quests/Quests.cshtml` (library heading) and `Views/Quests/Play.cshtml` (result outcome); logical AND `&&` in `Views/Quests/Play.cshtml` (`Model.Submitted && !q.IsCorrect`) and `Views/Quests/Quests.cshtml` (`quest.CanEdit \|\| quest.CanDelete`) |
+| Multi-parameter search and filtering | `QuestsController.Quests(section, searchText, difficulty)` → `DAL/QuestRepository.SearchAsync(search, difficulty, creatorId, savedByUserId)`; filter form in `Views/Quests/Quests.cshtml`; student search on `Views/Leaderboard/Leaderboard.cshtml` |
+| Repository pattern and DAL | `Subapp1-MVC/WebApp.Mvc/DAL` (`IQuestRepository`, `ICourseRepository`, `IUserRepository`, `IProgressRepository` and implementations), registered in `Program.cs` |
+| Async/await database access | All repository methods in `DAL` return `Task`, awaited in controller actions and services |
+| ViewModels | `Subapp1-MVC/WebApp.Mvc/ViewModels` (e.g. `QuestsPageViewModel`, `CreateQuestViewModel`, `PlayQuestViewModel`, `LeaderboardViewModel`) |
+| Validation | Data annotations in `Models` and `ViewModels`, `Models/PasswordRules.cs`, `ValidateQuest` and duplicate checks in controllers on the server; client side with jQuery validation (`Views/Shared/_ValidationScriptsPartial.cshtml`, loaded from `Views/Quests/Quests.cshtml` on the create/edit form and on the Course and User forms), `required` on the login form, and custom checks in the inline script in `Views/Quests/_CreateQuestForm.cshtml` (difficulty and correct option required) |
+| Error handling and logging | `try/catch` around saves in the controllers with `TempData["Error"]` / `ModelState` messages, global handling in `Program.cs`, `ILogger` in `QuestsController`, `CoursesController`, `UsersController`, `AccountController`, `QuestScoringService` and the seeders |
+| Authentication and roles | Cookie auth in `Program.cs`, `Controllers/AccountController.cs`, `Models/AppRoles.cs`; `[Authorize]` on quest create, edit and delete (owner or admin, checked with `CanEditQuest`), `[Authorize(Roles = AppRoles.Admin)]` on Course and User management; role-based navigation in `Views/Shared/_Layout.cshtml`; first admin created through `AccountController.SetupAdmin` (Development, localhost only) |
+| Unit tests (12+, 6 positive and 6 negative) | `Subapp1-MVC/WebApp.Mvc.Tests`: 36 test cases, 8 tagged Positive and 8 tagged Negative (`[Trait("Category", ...)]`), described in `WebApp.Mvc.Tests/README.md` |
+| User experience | Shared layout and navigation in `Views/Shared/_Layout.cshtml`, styling in `wwwroot/css` (`quests.css`, `site.css`), success/error banners via `TempData`, sound feedback on `Views/Quests/Play.cshtml` |
+| Coding style | Layered structure: `Controllers`, `Models`, `ViewModels`, `Services`, `DAL`, `Extensions`; comments on the important rules; unused placeholder code removed |
+| Documentation | This README and `Subapp1-MVC/WebApp.Mvc.Tests/README.md` |
+
 | Requirement | Subapp 2 |
 |---|---|
 | 3+ entities with CRUD | Quest, Course, User (`Subapp2-API-React/WebApp.Api/Controllers`, React pages in `Subapp2-API-React/webapp-react/src/pages`) |
