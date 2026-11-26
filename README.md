@@ -80,17 +80,22 @@ and users) and `anna`, `beatrice`, … (students). Delete `WebAppApi.db` to rese
 | Authentication and roles | Cookie auth in `Program.cs`, `Controllers/AccountController.cs`, `Models/AppRoles.cs`; `[Authorize]` on quest create, edit and delete (owner or admin, checked with `CanEditQuest`), `[Authorize(Roles = AppRoles.Admin)]` on Course and User management; role-based navigation in `Views/Shared/_Layout.cshtml`; first admin created through `AccountController.SetupAdmin` (Development, localhost only) |
 | Unit tests (12+, 6 positive and 6 negative) | `Subapp1-MVC/WebApp.Mvc.Tests`: 36 test cases, 8 tagged Positive and 8 tagged Negative (`[Trait("Category", ...)]`), described in `WebApp.Mvc.Tests/README.md` |
 | User experience | Shared layout and navigation in `Views/Shared/_Layout.cshtml`, styling in `wwwroot/css` (`quests.css`, `site.css`), success/error banners via `TempData`, sound feedback on `Views/Quests/Play.cshtml` |
-| Coding style | Layered structure: `Controllers`, `Models`, `ViewModels`, `Services`, `DAL`, `Extensions`; comments on the important rules; unused placeholder code removed |
-| Documentation | This README and `Subapp1-MVC/WebApp.Mvc.Tests/README.md` |
+
 
 | Requirement | Subapp 2 |
 |---|---|
+| Does not crash | `Subapp2-API-React/Webapp.Api/Middleware/GlobalExceptionHandler.cs`, `app.UseExceptionHandler()` in `Program.cs`, `NotFoundPage.jsx` and `ErrorMessage.jsx` in React |
+| Web UI with interactive forms | React pages in `Subapp2-API-React/webapp-react/src/pages` (e.g. `QuestFormPage.jsx`, `UserFormPage.jsx`, `CourseFormPage.jsx`, `PlayQuestPage.jsx`, `LoginPage.jsx`) |
 | 3+ entities with CRUD | Quest, Course, User (`Subapp2-API-React/WebApp.Api/Controllers`, React pages in `Subapp2-API-React/webapp-react/src/pages`) |
 | Many-to-many | User ↔ Quest through `QuestCompletion` (`Subapp2-API-React/WebApp.Api/Models`) |
 | Complex domain rule | `QuestValidator` (question rules) and `QuestScoringService` (XP only on first completion) |
-| Multi-parameter search | `GET /api/quests?search=&difficulty=&courseId=&status=&sort=`, filters on the Quests page |
+| Conditional rendering (2+ types) | `ProtectedRoute.jsx` (`if` and early returns), `QuestsPage.jsx` (`isAdmin && (...)` and ternary for loading / empty list) |
+| Multi-parameter search and filtering | `GET /api/quests?search=&difficulty=&courseId=&status=&sort=`, filters on the Quests page |
+| Async/await database access | All repository methods in `Webapp.Api/DAL` return `Task`, awaited in the controllers and services |
 | DTOs | `Subapp2-API-React/WebApp.Api/Dtos` |
 | Client-side API service layer | `Subapp2-API-React/webapp-react/src/services` (only `httpClient.js` calls `fetch`) |
 | Validation | Data annotations + `QuestValidator` on the server, matching checks in each React form |
 | Error handling and logging | `GlobalExceptionHandler`, `ILogger` in controllers and services, `ErrorMessage` in React |
 | Authentication and roles | Cookie auth in `Program.cs`, `[Authorize(Roles = "Admin")]`, `ProtectedRoute` in React |
+| User experience | `webapp-react/src/components` (`Layout`, `Navbar`, `Spinner`, `EmptyState`, `ConfirmDialog`), `ToastProvider.jsx`, `index.css` |
+| Coding style | Controllers / DAL / Services / Dtos on the API; pages / components / hooks / services / context in React |
