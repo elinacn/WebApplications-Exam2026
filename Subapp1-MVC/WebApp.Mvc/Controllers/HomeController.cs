@@ -11,11 +11,13 @@ namespace WebApp.Controllers;
 public class HomeController : Controller
 {
     private readonly IUserRepository _users;
+    private readonly IQuestRepository _quests;
     private readonly DailyStreakService _streakService;
 
-    public HomeController(IUserRepository users, DailyStreakService streakService)
+    public HomeController(IUserRepository users, DailyStreakService streakService, IQuestRepository quests)
     {
         _users = users;
+        _quests = quests;
         _streakService = streakService;
     }
 
@@ -52,7 +54,15 @@ public class HomeController : Controller
 
         ViewData["TopUsers"] = topUsers;
 
-        return View();
+        var nextQuests = userId is null ? new List<QuestCardViewModel>()
+            : (await _quests.GetUpNextAsync(userId.Value)).Select(q => new QuestCardViewModel
+            {
+                Id = q.Id,
+                Title = q.Title,
+                DifficultyLabel = q.Difficulty
+            }).ToList();
+
+        return View(nextQuests);
     }
 
     public IActionResult Privacy()

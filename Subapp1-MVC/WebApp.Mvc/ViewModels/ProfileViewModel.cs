@@ -8,8 +8,6 @@ public class ProfileViewModel
     public int Streak { get; set; }
     public int TotalXp { get; set; }
     public int QuizzesCompleted { get; set; }
-    // The challenge feature is not implemented yet.
-    public int ChallengesCompleted => 0;
 
     // Existing code points are XP. Each 100 XP advances one level, starting at level 1.
     public const int XpPerLevel = 100;
