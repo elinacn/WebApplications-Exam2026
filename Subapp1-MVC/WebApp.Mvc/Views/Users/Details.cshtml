@@ -1,4 +1,4 @@
-@model User
+@model WebApp.ViewModels.UserViewModel
 @{
     ViewData["Title"] = Model.Username;
 }
@@ -29,7 +29,7 @@
         <dd class="col-sm-9"><partial name="_LastSeen" model="Model" /></dd>
 
         <dt class="col-sm-3">Password</dt>
-        <dd class="col-sm-9">@(Model.PasswordHash is null ? "Not set – this user can't sign in until one is set under Edit" : "Set")</dd>
+        <dd class="col-sm-9">@(Model.HasPassword ? "Set" : "Not set – this user can't sign in until one is set under Edit")</dd>
     </dl>
 
     <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Edit</a>

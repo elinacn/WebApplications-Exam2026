@@ -110,6 +110,63 @@ public class ContentAuthorizationTests
         Assert.False(await verify.ServiceProvider.GetRequiredService<SheetsDbContext>().Quests.AnyAsync(q => q.Id == id));
     }
 
+    [Fact]
+    public async Task Admin_can_manage_users_without_exposing_hashes_or_binding_progress()
+    {
+        using var factory = new TestWebAppFactory();
+        using var browser = factory.CreateBrowser();
+        await TestWebAppFactory.SignInAsync(browser, "admin", UserSeeder.DemoPassword);
+        var form = new Dictionary<string, string>
+        {
+            ["Username"] = "viewmodeluser", ["Name"] = "View Model User", ["StudyProgram"] = "Web",
+            ["password"] = "testpassword123", ["Id"] = "99999", ["Points"] = "999",
+            ["QuizzesCompleted"] = "999", ["PasswordHash"] = "forged hash"
+        };
+        var invalid = await PostAsync(browser, "/Users/Create", "/Users/Create", new() { ["Username"] = "viewmodeluser" });
+        Assert.Equal(HttpStatusCode.OK, invalid.StatusCode);
+        Assert.Contains("Name is required.", await invalid.Content.ReadAsStringAsync());
+        Assert.Equal(HttpStatusCode.Redirect, (await PostAsync(browser, "/Users/Create", "/Users/Create", form)).StatusCode);
+        var duplicate = await PostAsync(browser, "/Users/Create", "/Users/Create", form);
+        Assert.Equal(HttpStatusCode.OK, duplicate.StatusCode);
+        Assert.Contains("This username is already taken.", await duplicate.Content.ReadAsStringAsync());
+
+        int id;
+        string hash;
+        using (var scope = factory.Services.CreateScope())
+        {
+            var user = await scope.ServiceProvider.GetRequiredService<SheetsDbContext>().Users.SingleAsync(u => u.Username == "viewmodeluser");
+            id = user.Id;
+            Assert.NotEqual(99999, id);
+            Assert.Equal(0, user.Points);
+            Assert.Equal(0, user.QuizzesCompleted);
+            hash = Assert.IsType<string>(user.PasswordHash);
+            Assert.NotEqual("forged hash", hash);
+            Assert.NotEqual(form["password"], hash);
+        }
+        Assert.Contains("View Model User", await browser.GetStringAsync("/Users"));
+        var details = await browser.GetStringAsync($"/Users/Details/{id}");
+        Assert.Contains("Set", details);
+        Assert.DoesNotContain(hash, details);
+        Assert.Contains("viewmodeluser", await browser.GetStringAsync($"/Users/Edit/{id}"));
+        Assert.Contains("viewmodeluser", await browser.GetStringAsync($"/Users/Delete/{id}"));
+
+        form["Id"] = id.ToString();
+        form["Name"] = "Updated View Model User";
+        Assert.Equal(HttpStatusCode.Redirect, (await PostAsync(browser, $"/Users/Edit/{id}", $"/Users/Edit/{id}", form)).StatusCode);
+        Assert.Contains("Updated View Model User", await browser.GetStringAsync($"/Users/Details/{id}"));
+        using (var scope = factory.Services.CreateScope())
+        {
+            var user = await scope.ServiceProvider.GetRequiredService<SheetsDbContext>().Users.FindAsync(id);
+            Assert.NotNull(user);
+            Assert.Equal(hash, user.PasswordHash);
+            Assert.Equal(0, user.Points);
+            Assert.Equal(0, user.QuizzesCompleted);
+        }
+        Assert.Equal(HttpStatusCode.Redirect, (await PostAsync(browser, $"/Users/Delete/{id}", $"/Users/Delete/{id}", [])).StatusCode);
+        using var verify = factory.Services.CreateScope();
+        Assert.False(await verify.ServiceProvider.GetRequiredService<SheetsDbContext>().Users.AnyAsync(u => u.Id == id));
+    }
+
     private static async Task<HttpResponseMessage> PostAsync(HttpClient browser, string formUrl, string actionUrl, Dictionary<string, string> data)
     {
         data["__RequestVerificationToken"] = await TestWebAppFactory.GetAntiForgeryTokenAsync(browser, formUrl);

@@ -5,6 +5,7 @@ using WebApp.Models;
 using WebApp.DAL;
 using Microsoft.AspNetCore.Authorization;
 using WebApp.Extensions;
+using WebApp.ViewModels;
 
 namespace WebApp.Controllers;
 
@@ -26,7 +27,7 @@ public class UsersController : Controller
     public async Task<IActionResult> Index()
     {
         var users = await _users.GetAllAsync();
-        return View(users);
+        return View(users.Select(UserViewModel.FromEntity).ToList());
     }
 
     // READ: single
@@ -41,23 +42,23 @@ public class UsersController : Controller
             _logger.LogWarning("User {UserId} not found", id);
             return NotFound();
         }
-        return View(user);
+        return View(UserViewModel.FromEntity(user));
     }
 
     // CREATE
     [Authorize(Roles = AppRoles.Admin)]
-    public IActionResult Create() => View(new User());
+    public IActionResult Create() => View(new UserViewModel());
 
     [HttpPost]
     [ValidateAntiForgeryToken]
     // Points and QuizzesCompleted are left out on purpose: they come from quiz results, not this form.
     // The password is a separate field so it is never bound onto the entity or shown again.
     [Authorize(Roles = AppRoles.Admin)]
-    public async Task<IActionResult> Create([Bind("Username,Name,StudyProgram,CreatedAt,IsAdmin")] User user, string? password)
+    public async Task<IActionResult> Create([Bind("Username,Name,StudyProgram,CreatedAt,IsAdmin")] UserViewModel user, string? password)
     {
         // Custom server-side rules on top of the data annotations
         if (await _users.UsernameExistsAsync(user.Username))
-            ModelState.AddModelError(nameof(Models.User.Username), "This username is already taken.");
+            ModelState.AddModelError(nameof(UserViewModel.Username), "This username is already taken.");
 
         if (PasswordRules.Validate(password) is string passwordError)
             ModelState.AddModelError(nameof(password), passwordError);
@@ -66,9 +67,17 @@ public class UsersController : Controller
 
         try
         {
-            user.PasswordHash = _passwordHasher.HashPassword(user, password!);
-            await _users.AddAsync(user);
-            _logger.LogInformation("Created user {UserId} ({Username})", user.Id, user.Username);
+            var entity = new Models.User
+            {
+                Username = user.Username,
+                Name = user.Name,
+                StudyProgram = user.StudyProgram,
+                CreatedAt = user.CreatedAt,
+                IsAdmin = user.IsAdmin
+            };
+            entity.PasswordHash = _passwordHasher.HashPassword(entity, password!);
+            await _users.AddAsync(entity);
+            _logger.LogInformation("Created user {UserId} ({Username})", entity.Id, entity.Username);
             TempData["Success"] = "User created.";
             return RedirectToAction(nameof(Index));
         }
@@ -96,14 +105,14 @@ public class UsersController : Controller
 
         var user = await _users.GetByIdAsync(id.Value);
 
-        return user is null ? NotFound() : View(user);
+        return user is null ? NotFound() : View(UserViewModel.FromEntity(user));
     }
 
     [Authorize]
     [HttpPost]
     [ValidateAntiForgeryToken]
     // newPassword is optional: leave it empty to keep the current password
-    public async Task<IActionResult> Edit(int id, [Bind("Id,Username,Name,StudyProgram,CreatedAt,IsAdmin")] User user, string? newPassword, string? currentPassword)
+    public async Task<IActionResult> Edit(int id, [Bind("Id,Username,Name,StudyProgram,CreatedAt,IsAdmin")] UserViewModel user, string? newPassword, string? currentPassword)
     {
         if (!User.IsInRole(AppRoles.Admin) && id != User.GetUserId())
         {
@@ -112,7 +121,7 @@ public class UsersController : Controller
         if (id != user.Id) return BadRequest();
 
         if (await _users.UsernameExistsAsync(user.Username, id))
-            ModelState.AddModelError(nameof(Models.User.Username), "This username is already taken.");
+            ModelState.AddModelError(nameof(UserViewModel.Username), "This username is already taken.");
 
         if (!string.IsNullOrEmpty(newPassword) && PasswordRules.Validate(newPassword) is string passwordError)
             ModelState.AddModelError(nameof(newPassword), passwordError);
@@ -123,7 +132,7 @@ public class UsersController : Controller
         if (User.IsInRole(AppRoles.Admin) && existing.IsAdmin && !user.IsAdmin
             && await _users.CountAdminsAsync() <= 1)
         {
-            ModelState.AddModelError(nameof(Models.User.IsAdmin), "Keep at least one admin account.");
+            ModelState.AddModelError(nameof(UserViewModel.IsAdmin), "Keep at least one admin account.");
         }
 
         if (!string.IsNullOrEmpty(newPassword) && id == User.GetUserId())
@@ -183,7 +192,7 @@ public class UsersController : Controller
         if (id is null) return BadRequest();
 
         var user = await _users.GetByIdAsync(id.Value);
-        return user is null ? NotFound() : View(user);
+        return user is null ? NotFound() : View(UserViewModel.FromEntity(user));
     }
 
     [Authorize(Roles = AppRoles.Admin)]

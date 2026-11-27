@@ -1,13 +1,13 @@
 # WebApp.Tests
 
-xUnit tests for the WebApp project: 37 test cases. They are run by hand during development and are not part of any build or deployment step.
+xUnit tests for the WebApp project: 38 test cases. They are run by hand during development and are not part of any build or deployment step.
 
 ## Running
 
 From the repository root:
 
 ```bash
-dotnet test Subapp1-MVC/WebApp.Mvc.Tests                               # all 37 tests
+dotnet test Subapp1-MVC/WebApp.Mvc.Tests                               # all 38 tests
 dotnet test Subapp1-MVC/WebApp.Mvc.Tests --filter Category=Positive    # the 10 positive cases (unit and integration)
 dotnet test Subapp1-MVC/WebApp.Mvc.Tests --filter Category=Negative    # the 11 negative cases (unit and integration)
 ```
@@ -25,7 +25,7 @@ In VS Code, the tests also appear in the Testing panel (C# Dev Kit).
 | `SubmissionSaveTests.cs` | Successful submissions and failed score/streak saves | Controller with SQLite |
 | `PasswordChangeTests.cs` | Current password checks and ordinary profile edits | Integration |
 | `RoleAuthorizationTests.cs` | Admin/student access, ownership, role updates and self-promotion protection | Integration |
-| `ContentAuthorizationTests.cs` | Signed-out restrictions and signed-in quest/course CRUD | Integration |
+| `ContentAuthorizationTests.cs` | Signed-out restrictions, quest/course/user CRUD, ViewModel rendering and protected account fields | Integration |
 | `SignInTests.cs` | Signing in, wrong passwords, and `[Authorize]` on saving quests | Integration |
 
 ## Unit-test count
