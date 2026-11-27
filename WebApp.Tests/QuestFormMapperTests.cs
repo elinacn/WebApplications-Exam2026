@@ -20,6 +20,7 @@ public class QuestFormMapperTests
 
     [Fact]
     [Trait("Category", "Positive")]
+    [Trait("Type", "Unit")]
     public void Multiple_choice_skips_empty_options_and_keeps_correct_answers_after_renumbering()
     {
         var quest = Map(new CreateQuestQuestionViewModel
@@ -45,6 +46,7 @@ public class QuestFormMapperTests
 
     [Fact]
     [Trait("Category", "Positive")]
+    [Trait("Type", "Unit")]
     public void Free_text_answers_are_trimmed_deduplicated_and_stored_one_per_line()
     {
         var quest = Map(new CreateQuestQuestionViewModel

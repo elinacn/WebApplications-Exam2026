@@ -14,6 +14,7 @@ public class CodeAnswerCheckerTests
 
     [Fact]
     [Trait("Category", "Positive")]
+    [Trait("Type", "Unit")]
     public void Accepts_answer_with_different_spacing_return_and_semicolon()
     {
         var question = SumQuestion();
@@ -24,6 +25,7 @@ public class CodeAnswerCheckerTests
 
     [Fact]
     [Trait("Category", "Negative")]
+    [Trait("Type", "Unit")]
     public void Rejects_wrong_answer_and_wrong_capitalisation()
     {
         var question = SumQuestion();
@@ -35,6 +37,7 @@ public class CodeAnswerCheckerTests
 
     [Fact]
     [Trait("Category", "Negative")]
+    [Trait("Type", "Unit")]
     public void Rejects_empty_answers_and_questions_without_accepted_code()
     {
         Assert.False(CodeAnswerChecker.IsCorrect(SumQuestion(), ""));

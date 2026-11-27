@@ -1,16 +1,21 @@
 # WebApp.Tests
 
-xUnit tests for the WebApp project: 36 test cases. They are run by hand during development and are not part of any build or deployment step.
+xUnit tests for the WebApp project: 41 test cases, of which 12 are unit tests (6 positive, 6 negative). They are run by hand during development and are not part of any build or deployment step.
 
 ## Running
 
 From the repository root:
 
 ```bash
-dotnet test WebApp.Tests                               # all 36 tests
-dotnet test WebApp.Tests --filter Category=Positive    # the 8 positive tests
-dotnet test WebApp.Tests --filter Category=Negative    # the 8 negative tests
+dotnet test WebApp.Tests                                              # all 41 tests
+dotnet test WebApp.Tests --filter Type=Unit                           # the 12 unit tests
+dotnet test WebApp.Tests --filter "Type=Unit&Category=Positive"       # the 6 positive unit tests
+dotnet test WebApp.Tests --filter "Type=Unit&Category=Negative"       # the 6 negative unit tests
+dotnet test WebApp.Tests --filter Category=Positive                   # all 10 positive tests (unit and integration)
+dotnet test WebApp.Tests --filter Category=Negative                   # all 11 negative tests (unit and integration)
 ```
+
+Unit tests check one class's logic on its own, with no database or web server. They are tagged `Type=Unit`. The `Category` tags (`Positive`, `Negative`) are also used on some integration tests, so combine the two filters to select only unit tests.
 
 In VS Code, the tests also appear in the Testing panel (C# Dev Kit).
 
@@ -21,6 +26,9 @@ In VS Code, the tests also appear in the Testing panel (C# Dev Kit).
 | `CodeAnswerCheckerTests.cs` | Grading of fill-in-the-blank code questions | Unit |
 | `PasswordRulesTests.cs` | Password length rules | Unit |
 | `QuestFormMapperTests.cs` | Turning the quest form into database rows | Unit |
+| `ClaimsPrincipalExtensionsTests.cs` | Reading the signed-in user's ID from the login claims | Unit |
+| `UserTests.cs` | The "online" indicator (last seen within 5 minutes) | Unit |
+| `DifficultyRulesTests.cs` | Rejecting unknown quest difficulties | Unit |
 | `DifficultyXpTests.cs` | Difficulty XP rewards, retakes and legacy names | Service with SQLite |
 | `SubmissionSaveTests.cs` | Successful submissions and failed score/streak saves | Controller with SQLite |
 | `PasswordChangeTests.cs` | Current password checks and ordinary profile edits | Integration |
