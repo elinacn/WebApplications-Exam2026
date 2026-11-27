@@ -79,19 +79,25 @@ public class QuestsController : ControllerBase
         var quest = await _quests.GetWithQuestionsAsync(id);
         if (quest is null) return NotFound();
 
+        if (quest.Questions.Count == 0)
+            return Conflict(new ProblemDetails { Status = 409, Title = "This quest has no questions yet." });
+
+        if (submission.Answers is null || submission.Answers.Any(a => a is null))
+        {
+            ModelState.AddModelError(nameof(submission.Answers), "Provide a valid list of answers.");
+            return ValidationProblem(ModelState);
+        }
+
         var userId = User.GetUserId()!.Value;
-        var results = _grading.Grade(quest, submission.Answers ?? []);
+        var results = _grading.Grade(quest, submission.Answers);
         var points = quest.Questions.ToDictionary(q => q.Id, q => q.Points);
         var score = results.Where(r => r.IsCorrect).Sum(r => points[r.QuestionId]);
         var maxScore = points.Values.Sum();
 
+        CompletionResult completion;
         try
         {
-            var completion = await _scoring.RecordCompletionAsync(userId, quest, score, maxScore);
-            await _streaks.RecordActivityAsync(userId);
-
-            return new QuizResultDto(score, maxScore, completion.XpAwarded, completion.FirstCompletion,
-                completion.BestScore, completion.TotalXp, Saved: true, results);
+            completion = await _scoring.RecordCompletionAsync(userId, quest, score, maxScore);
         }
         catch (DbUpdateException ex)
         {
@@ -100,6 +106,21 @@ public class QuestsController : ControllerBase
             _logger.LogError(ex, "Failed to save the result of quest {QuestId} for user {UserId}", id, userId);
             return new QuizResultDto(score, maxScore, 0, false, score, 0, Saved: false, results);
         }
+
+        // The score and XP are already committed. A streak failure must not hide them.
+        string? streakError = null;
+        try
+        {
+            await _streaks.RecordActivityAsync(userId);
+        }
+        catch (DbUpdateException ex)
+        {
+            _logger.LogWarning(ex, "Saved quest {QuestId} for user {UserId}, but failed to record the streak", id, userId);
+            streakError = "Your result and XP were saved, but your daily streak could not be updated. Try completing a quest again.";
+        }
+
+        return new QuizResultDto(score, maxScore, completion.XpAwarded, completion.FirstCompletion,
+            completion.BestScore, completion.TotalXp, Saved: true, results, streakError);
     }
 
     // GET /api/quests/5 – the quest as an edit form, answers included (admins only)
@@ -116,6 +137,7 @@ public class QuestsController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<QuestSummaryDto>> Create(QuestFormDto form)
     {
+        if (!ModelState.IsValid) return ValidationProblem(ModelState);
         await ValidateAsync(form, questId: 0);
         if (!ModelState.IsValid) return ValidationProblem(ModelState);
 
@@ -132,6 +154,7 @@ public class QuestsController : ControllerBase
     [HttpPut("{id:int}")]
     public async Task<IActionResult> Update(int id, QuestFormDto form)
     {
+        if (!ModelState.IsValid) return ValidationProblem(ModelState);
         var quest = await _quests.GetWithQuestionsAsync(id, tracking: true);
         if (quest is null) return NotFound();
 

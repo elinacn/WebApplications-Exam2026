@@ -53,6 +53,8 @@ export default function QuizResult({ quest, answers, result, onRetry }) {
             </p>
           )}
 
+          {result.streakError && <p className="alert alert-warning">{result.streakError}</p>}
+
           <div className="button-row">
             <button type="button" className="btn btn-primary" onClick={onRetry}>
               ↻ Try again
