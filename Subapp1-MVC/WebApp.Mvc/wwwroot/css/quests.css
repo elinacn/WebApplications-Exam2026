@@ -1,0 +1,742 @@
+.quests-page {
+  display: flex;
+  align-items: stretch;
+  min-height: calc(100vh - 75px - 80px);
+  background-color: #111827;
+  color: #ffffff;
+  padding: 24px 24px 40px 12px;
+  box-sizing: border-box;
+  gap: 8px;
+}
+
+.quests-sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 12px 8px 8px;
+}
+
+.quests-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  color: #e5e7eb;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.quests-nav-item:hover {
+  color: #ffffff;
+  background-color: rgba(139, 92, 246, 0.2);
+}
+
+.quests-nav-item.is-active {
+  background-color: #8B5CF6;
+  color: #ffffff;
+}
+
+.quests-nav-icon {
+  flex-shrink: 0;
+}
+
+.quests-sidebar-divider {
+  border: 0;
+  border-top: 1px solid #374151;
+  margin: 10px 8px;
+}
+
+.quests-main {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 16px 0 24px;
+}
+
+.quests-play-page {
+  justify-content: center;
+  padding: 24px 24px 40px;
+}
+
+.quests-play-page .quests-main {
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 8px 0 0;
+}
+
+.quests-filter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.quests-search,
+.quests-difficulty {
+  background-color: #1f2937;
+  color: #ffffff;
+  border: 1px solid #374151;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 0.95rem;
+}
+
+.quests-search {
+  min-width: 220px;
+  flex: 1;
+  max-width: 320px;
+}
+
+.quests-difficulty {
+  min-width: 160px;
+}
+
+.quests-apply,
+.quests-reset {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.quests-apply {
+  background-color: #6366F1;
+  color: #ffffff;
+}
+
+.quests-apply:hover {
+  background-color: #4f46e5;
+}
+
+.quests-reset {
+  background-color: #1f2937;
+  color: #e5e7eb;
+  border: 1px solid #374151;
+}
+
+.quests-reset:hover {
+  background-color: #111827;
+  color: #ffffff;
+}
+
+.quests-create-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.95rem;
+  background-color: #8B5CF6;
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.quests-create-btn:hover,
+.quests-create-btn.is-active {
+  background-color: #7c3aed;
+  color: #ffffff;
+}
+
+.quests-create-panel {
+  max-width: 760px;
+  padding-bottom: 48px;
+}
+
+.quests-create-hint {
+  color: #9ca3af;
+  font-size: 0.9rem;
+  margin: -8px 0 16px;
+}
+
+.quests-create-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  background-color: #1f2937;
+  border: 1px solid #374151;
+  border-radius: 8px;
+  box-sizing: border-box;
+}
+
+.quests-create-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px 16px;
+}
+
+.quests-create-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: #d1d5db;
+}
+
+.quests-create-field-wide {
+  grid-column: 1 / -1;
+}
+
+.quests-create-field input,
+.quests-create-field select,
+.quests-create-field textarea {
+  background-color: #111827;
+  color: #ffffff;
+  border: 1px solid #374151;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 0.9rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.quests-create-q-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.quests-create-q-bar .quests-create-subheading {
+  margin: 0;
+}
+
+.quests-create-subheading,
+.quests-create-label {
+  margin: 8px 0 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #c4b5fd;
+}
+
+.quests-create-block {
+  border: 1px solid #374151;
+  border-radius: 8px;
+  padding: 12px 14px 16px;
+  margin: 0;
+}
+
+.quests-create-block legend {
+  padding: 0 6px;
+  color: #e5e7eb;
+  font-size: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.quests-remove-q {
+  background: transparent;
+  border: 1px solid #4b5563;
+  color: #e5e7eb;
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.quests-remove-q:hover {
+  border-color: #f87171;
+  color: #fca5a5;
+}
+
+.quests-create-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.quests-section {
+  margin-bottom: 36px;
+}
+
+.quests-heading {
+  color: #ffffff;
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+}
+
+.quests-row,
+.quests-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
+  gap: 20px;
+  max-width: 1100px;
+}
+
+.quest-card {
+  border-radius: 4px;
+  min-width: 0;
+  min-height: 250px;
+  position: relative;
+  background-color: #d1d5db;
+  color: #111827;
+  padding: 18px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Keep all content inside the card, even when a title wraps. */
+.quest-card > * {
+  flex-shrink: 0;
+}
+
+.quest-save-form {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  margin: 0;
+}
+
+.quest-save-btn {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+  color: #4b5563;
+}
+
+.quest-save-btn.is-saved {
+  color: #8B5CF6;
+}
+
+.quest-card-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin: 0 28px 0 0;
+  line-height: 1.35;
+  min-height: 2.7em;
+  overflow-wrap: anywhere;
+}
+
+.quest-card-code,
+.quest-card-meta,
+.quest-card-status,
+.quest-card-progress {
+  margin: 0;
+  font-size: 0.8rem;
+}
+
+.quest-card-code {
+  color: #4b5563;
+}
+
+.quest-card-actions {
+  margin-top: auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 0.8rem;
+}
+
+.quest-card-actions a {
+  color: #4c1d95;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.quest-card-actions a:hover {
+  text-decoration: underline;
+}
+
+.quest-progress {
+  margin-top: auto;
+  height: 6px;
+  background-color: #9ca3af;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.quest-progress-fill {
+  display: block;
+  height: 100%;
+  background-color: #6366F1;
+}
+
+/* Small (see site.css): stacks sidebar above main content. */
+@media (max-width: 640px) {
+  .quests-page {
+    flex-direction: column;
+    padding: 16px;
+  }
+
+  .quests-sidebar {
+    width: 100%;
+  }
+
+  .quests-main {
+    padding: 16px 0 0;
+  }
+
+}
+
+.quests-create-block [hidden] {
+display: none !important;
+}
+
+.quests-create-hint-inline {
+  color: #9ca3af;
+  font-size: 0.8rem;
+  margin: 4px 0 8px;
+}
+
+.quests-option-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 8px 0 12px;
+}
+
+.quests-answer-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 8px 0 12px;
+}
+
+.quests-option-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.quests-option-row input[type="text"] {
+  flex: 1;
+  min-width: 0;
+  background-color: #111827;
+  color: #ffffff;
+  border: 1px solid #374151;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 0.9rem;
+  box-sizing: border-box;
+}
+
+.quests-option-correct,
+.quests-create-check {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: #e5e7eb;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.quests-create-check {
+  margin: 4px 0 8px;
+}
+
+.quests-option-letter {
+  width: 20px;
+  font-weight: 600;
+  color: #c4b5fd;
+}
+
+.quests-remove-q:disabled,
+.quests-reset:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.quests-remove-q:disabled:hover {
+  border-color: #4b5563;
+  color: #e5e7eb;
+}
+
+.quests-option-row .quests-remove-q {
+  font-size: 1rem;
+  line-height: 1;
+  padding: 4px 10px;
+}
+
+/* ---- Space between elements ---- */
+.quests-create-form {
+  gap: 28px;
+  padding: 28px;
+}
+
+.quests-create-grid {
+  gap: 18px 20px;
+}
+
+.quests-create-field {
+  gap: 8px;
+}
+
+.quests-create-block {
+  padding: 26px;
+}
+
+.quests-create-block > * + * {
+  margin-top: 24px;
+}
+
+.quests-create-check {
+  margin: 6px 0 12px;
+}
+
+/* ---- Question header: title left, Remove far right ---- */
+.quests-q-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.quests-q-title {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.quests-q-header .quests-remove-q {
+  margin-left: auto;
+  padding: 4px 12px;
+  font-size: 0.85rem;
+}
+
+/* ---- Bigger "important" titles ---- */
+.quests-create-subheading,
+.quests-create-label {
+  margin: 0 0 4px;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.quests-create-field-important {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #c4b5fd;
+}
+
+/* ---- Options / answers: more room before the add buttons ---- */
+.quests-option-list,
+.quests-answer-list {
+  gap: 12px;
+  margin: 12px 0 0;
+}
+
+.js-add-option,
+.js-add-answer {
+  margin-top: 24px;
+}
+
+/* ---- + button: centered under the question box ---- */
+.quests-add-q-row {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.quests-add-q {
+  position: relative;
+  width: 52px;
+  height: 52px;
+  padding: 0;
+  border-radius: 6px;
+  font-size: 0; /* hides the "+" character, the bars below replace it */
+}
+
+.quests-add-q::before,
+.quests-add-q::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  background-color: currentColor;
+  transform: translate(-50%, -50%);
+}
+
+.quests-add-q::before {
+  width: 20px;
+  height: 3px;
+}
+
+.quests-add-q::after {
+  width: 3px;
+  height: 20px;
+}
+
+.quests-create-block {
+  scroll-margin-top: 110px;
+}
+
+
+/* ---- Playing a quest ---- */
+a.quests-apply,
+a.quests-apply:hover {
+  color: #ffffff;
+}
+
+.quests-play-question {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #ffffff;
+  white-space: pre-wrap;
+}
+
+.quests-play-text {
+  background-color: #111827;
+  color: #ffffff;
+  border: 1px solid #374151;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 0.9rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.quests-play-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background-color: #111827;
+  border: 1px solid #374151;
+  border-radius: 6px;
+  color: #e5e7eb;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.quests-play-option:hover {
+  border-color: #8B5CF6;
+}
+
+.quests-play-option.is-correct {
+  border-color: #34d399;
+  background-color: rgba(52, 211, 153, 0.12);
+}
+
+.quests-play-option.is-wrong {
+  border-color: #f87171;
+  background-color: rgba(248, 113, 113, 0.12);
+}
+
+fieldset[disabled] .quests-play-option {
+  cursor: default;
+  color: #e5e7eb;
+}
+
+fieldset[disabled] .quests-play-option:hover {
+  border-color: #374151;
+}
+
+fieldset[disabled] .quests-play-option.is-correct:hover {
+  border-color: #34d399;
+}
+
+fieldset[disabled] .quests-play-option.is-wrong:hover {
+  border-color: #f87171;
+}
+
+.quests-play-text:disabled {
+  color: #ffffff;
+}
+
+.quests-play-badge {
+  margin-left: auto;
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: 1px solid;
+}
+
+.quests-play-badge.is-correct {
+  color: #34d399;
+  border-color: #34d399;
+}
+
+.quests-play-badge.is-wrong {
+  color: #f87171;
+  border-color: #f87171;
+}
+
+.quests-play-answer,
+.quests-play-explanation {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #c4b5fd;
+}
+
+.quests-play-explanation {
+  color: #9ca3af;
+}
+
+/* Start button on the quest cards */
+.quest-card-play {
+  margin-top: auto;
+  padding-top: 8px;
+}
+
+.quest-card-play .quests-apply {
+  width: 100%;
+  padding: 6px 12px;
+  font-size: 0.8rem;
+  box-sizing: border-box;
+}
+
+.quest-card-play + .quest-card-actions {
+  margin-top: 8px;
+}
+
+/* Play page: score summary, and code questions */
+.quests-play-result {
+  margin: 0 0 16px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background-color: #1e293b;
+  border: 1px solid #334155;
+  color: #f8fafc;
+}
+
+.quests-play-result p {
+  margin: 0;
+}
+
+.quests-play-result p + p {
+  margin-top: 4px;
+}
+
+/* Keep line breaks in question text, e.g. the examples under code questions */
+.quests-play-question {
+  white-space: pre-line;
+}
+
+.quests-play-code {
+  margin: 0 0 10px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  background-color: #0f172a;
+  color: #e2e8f0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.9rem;
+  white-space: pre;
+  overflow-x: auto;
+}
+
+.quests-play-code-input {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
