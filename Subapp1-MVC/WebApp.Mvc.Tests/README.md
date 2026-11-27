@@ -1,15 +1,15 @@
 # WebApp.Tests
 
-xUnit tests for the WebApp project: 34 test cases. They are run by hand during development and are not part of any build or deployment step.
+xUnit tests for the WebApp project: 37 test cases. They are run by hand during development and are not part of any build or deployment step.
 
 ## Running
 
 From the repository root:
 
 ```bash
-dotnet test WebApp.Tests                               # all 34 tests
-dotnet test WebApp.Tests --filter Category=Positive    # the 8 positive tests
-dotnet test WebApp.Tests --filter Category=Negative    # the 8 negative tests
+dotnet test Subapp1-MVC/WebApp.Mvc.Tests                               # all 37 tests
+dotnet test Subapp1-MVC/WebApp.Mvc.Tests --filter Category=Positive    # the 10 positive cases (unit and integration)
+dotnet test Subapp1-MVC/WebApp.Mvc.Tests --filter Category=Negative    # the 11 negative cases (unit and integration)
 ```
 
 In VS Code, the tests also appear in the Testing panel (C# Dev Kit).
@@ -21,12 +21,16 @@ In VS Code, the tests also appear in the Testing panel (C# Dev Kit).
 | `CodeAnswerCheckerTests.cs` | Grading of fill-in-the-blank code questions | Unit |
 | `PasswordRulesTests.cs` | Password length rules | Unit |
 | `QuestFormMapperTests.cs` | Turning the quest form into database rows | Unit |
-| `DifficultyXpTests.cs` | Difficulty XP rewards, retakes and legacy names | Service with SQLite |
+| `DifficultyXpTests.cs` | Legacy difficulty names (2 positive unit cases), invalid difficulties (3 negative unit tests), and XP/retakes (4 SQLite cases) | Unit and service with SQLite |
 | `SubmissionSaveTests.cs` | Successful submissions and failed score/streak saves | Controller with SQLite |
 | `PasswordChangeTests.cs` | Current password checks and ordinary profile edits | Integration |
 | `RoleAuthorizationTests.cs` | Admin/student access, ownership, role updates and self-promotion protection | Integration |
 | `ContentAuthorizationTests.cs` | Signed-out restrictions and signed-in quest/course CRUD | Integration |
 | `SignInTests.cs` | Signing in, wrong passwords, and `[Authorize]` on saving quests | Integration |
+
+## Unit-test count
+
+The 12 isolated unit-test cases are: `CodeAnswerCheckerTests` (1 positive, 2 negative), `PasswordRulesTests` (1 positive, 1 negative), `QuestFormMapperTests` (2 positive), and the database-free tests in `DifficultyXpTests` (2 positive legacy-name theory cases, 3 negative invalid-input tests). Total: 6 positive and 6 negative. Each theory row is a separate test case. SQLite and HTTP integration tests are additional coverage and are not counted toward these 12.
 
 ## How the integration tests work
 

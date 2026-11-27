@@ -50,9 +50,34 @@ public class DifficultyXpTests
     [Theory]
     [InlineData("apprentice", "Beginner", 10)]
     [InlineData("knight", "Intermediate", 25)]
+    [Trait("Category", "Positive")]
     public void Legacy_difficulties_use_the_new_names_and_rewards(string oldName, string newName, int xp)
     {
         Assert.Equal(newName, DifficultyRules.Normalize(oldName));
         Assert.Equal(xp, DifficultyRules.GetCompletionXp(oldName));
+    }
+
+    [Fact]
+    [Trait("Category", "Negative")]
+    public void Rejects_unknown_difficulty()
+    {
+        var error = Assert.Throws<ArgumentException>(() => DifficultyRules.Normalize("Impossible"));
+        Assert.Equal("difficulty", error.ParamName);
+    }
+
+    [Fact]
+    [Trait("Category", "Negative")]
+    public void Rejects_missing_difficulty()
+    {
+        var error = Assert.Throws<ArgumentNullException>(() => DifficultyRules.Normalize(null!));
+        Assert.Equal("difficulty", error.ParamName);
+    }
+
+    [Fact]
+    [Trait("Category", "Negative")]
+    public void Rejects_blank_difficulty()
+    {
+        var error = Assert.Throws<ArgumentException>(() => DifficultyRules.Normalize("   "));
+        Assert.Equal("difficulty", error.ParamName);
     }
 }
