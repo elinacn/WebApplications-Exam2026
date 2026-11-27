@@ -1,4 +1,4 @@
-@model Course
+@model WebApp.ViewModels.CourseViewModel
 @{
     ViewData["Title"] = "Delete course";
 }
@@ -15,7 +15,7 @@
         <dd class="col-sm-9">@Model.Title</dd>
     </dl>
 
-    @if (Model.Quests.Count > 0)
+    @if (Model.QuestTitles.Count > 0)
     {
         <div class="alert alert-warning">
             The quests below are not deleted, but they will no longer belong to any course.

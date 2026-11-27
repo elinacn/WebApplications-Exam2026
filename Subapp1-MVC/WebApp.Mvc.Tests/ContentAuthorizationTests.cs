@@ -53,14 +53,26 @@ public class ContentAuthorizationTests
         }
         await TestWebAppFactory.SignInAsync(browser, "anna", UserSeeder.DemoPassword);
         var form = new Dictionary<string, string> { ["Code"] = "AUTH-101", ["Title"] = "Permission test course" };
+        var invalid = await PostAsync(browser, "/Courses/Create", "/Courses/Create", new() { ["Code"] = "AUTH-101" });
+        Assert.Equal(HttpStatusCode.OK, invalid.StatusCode);
+        Assert.Contains("Course title is required.", await invalid.Content.ReadAsStringAsync());
+
         var created = await PostAsync(browser, "/Courses/Create", "/Courses/Create", form);
         Assert.Equal(HttpStatusCode.Redirect, created.StatusCode);
+        var duplicate = await PostAsync(browser, "/Courses/Create", "/Courses/Create", form);
+        Assert.Equal(HttpStatusCode.OK, duplicate.StatusCode);
+        Assert.Contains("A course with this code already exists.", await duplicate.Content.ReadAsStringAsync());
         int id;
         using (var scope = factory.Services.CreateScope())
             id = (await scope.ServiceProvider.GetRequiredService<SheetsDbContext>().Courses.SingleAsync(c => c.Code == "AUTH-101")).Id;
+        Assert.Contains("AUTH-101", await browser.GetStringAsync("/Courses"));
+        Assert.Contains("Permission test course", await browser.GetStringAsync($"/Courses/Details/{id}"));
+        Assert.Contains("AUTH-101", await browser.GetStringAsync($"/Courses/Edit/{id}"));
+        Assert.Contains("AUTH-101", await browser.GetStringAsync($"/Courses/Delete/{id}"));
         form["Id"] = id.ToString();
         form["Title"] = "Updated permission course";
         Assert.Equal(HttpStatusCode.Redirect, (await PostAsync(browser, $"/Courses/Edit/{id}", $"/Courses/Edit/{id}", form)).StatusCode);
+        Assert.Contains("Updated permission course", await browser.GetStringAsync($"/Courses/Details/{id}"));
         Assert.Equal(HttpStatusCode.Redirect, (await PostAsync(browser, $"/Courses/Delete/{id}", $"/Courses/Delete/{id}", [])).StatusCode);
         using var verify = factory.Services.CreateScope();
         Assert.False(await verify.ServiceProvider.GetRequiredService<SheetsDbContext>().Courses.AnyAsync(c => c.Id == id));
