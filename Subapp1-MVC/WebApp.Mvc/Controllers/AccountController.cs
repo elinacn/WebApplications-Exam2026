@@ -1,11 +1,8 @@
-using System.Net;
-using WebApp.ViewModels;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using WebApp.Models;
 using WebApp.DAL;
 
@@ -16,76 +13,20 @@ namespace WebApp.Controllers;
 public class AccountController : Controller
 {
     private readonly IUserRepository _users;
-    private readonly IWebHostEnvironment _environment;
     private readonly IPasswordHasher<User> _passwordHasher;
     private readonly ILogger<AccountController> _logger;
 
-    public AccountController(IUserRepository users, IPasswordHasher<User> passwordHasher, ILogger<AccountController> logger, IWebHostEnvironment environment)
+    public AccountController(IUserRepository users, IPasswordHasher<User> passwordHasher, ILogger<AccountController> logger)
     {
         _users = users;
-        _environment = environment;
         _passwordHasher = passwordHasher;
         _logger = logger;
     }
 
-    public async Task<IActionResult> Login(string? returnUrl = null)
+    public IActionResult Login(string? returnUrl = null)
     {
         ViewData["ReturnUrl"] = returnUrl;
-        ViewData["CanSetupAdmin"] = await CanSetupAdminAsync();
         return View();
-    }
-
-    // One-time bootstrap is available only from this computer in Development,
-    // and disappears as soon as an admin exists. No default admin password is stored.
-    private Task<bool> CanSetupAdminAsync()
-    {
-        if (!_environment.IsDevelopment() || Request.HttpContext.Connection.RemoteIpAddress is not { } ip
-            || !IPAddress.IsLoopback(ip)) return Task.FromResult(false);
-        return NoAdminExistsAsync();
-    }
-
-    private async Task<bool> NoAdminExistsAsync() => await _users.CountAdminsAsync() == 0;
-
-    [HttpGet]
-    public async Task<IActionResult> SetupAdmin()
-    {
-        if (!await CanSetupAdminAsync()) return NotFound();
-        return View(new AdminSetupViewModel());
-    }
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> SetupAdmin(AdminSetupViewModel model)
-    {
-        if (!await CanSetupAdminAsync()) return NotFound();
-        if (PasswordRules.Validate(model.Password) is string error)
-            ModelState.AddModelError(nameof(model.Password), error);
-        if (await _users.GetByUsernameAsync("admin") is not null)
-            ModelState.AddModelError(string.Empty, "An account named admin already exists. Choose another bootstrap account with your team.");
-        if (!ModelState.IsValid) return View(model);
-
-        var user = new User { Username = "admin", Name = "Administrator", StudyProgram = "Administration", IsAdmin = true };
-        user.PasswordHash = _passwordHasher.HashPassword(user, model.Password);
-        try
-        {
-            await _users.AddAsync(user);
-        }
-        catch (DbUpdateException ex)
-        {
-            _logger.LogError(ex, "Failed to create the initial admin account");
-            ModelState.AddModelError(string.Empty, "The admin account could not be created. Refresh and try again.");
-            return View(model);
-        }
-        var identity = new ClaimsIdentity(new[]
-        {
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Name, user.Name),
-            new Claim(ClaimTypes.Role, AppRoles.Admin)
-        }, CookieAuthenticationDefaults.AuthenticationScheme);
-        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity));
-        _logger.LogInformation("Created the initial admin account {UserId}", user.Id);
-        TempData["Success"] = "Admin account created. You are now signed in as admin.";
-        return RedirectToAction("Index", "Users");
     }
 
     [HttpPost]

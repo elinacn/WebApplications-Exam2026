@@ -142,15 +142,15 @@ public class RoleAuthorizationTests
         using (var scope = factory.Services.CreateScope())
         {
             var db = scope.ServiceProvider.GetRequiredService<SheetsDbContext>();
-            var admin = await db.Users.SingleAsync(u => u.Username == "anna");
+            var admin = await db.Users.SingleAsync(u => u.Username == "admin");
             admin.IsAdmin = true;
             await db.SaveChangesAsync();
             id = admin.Id;
         }
-        await TestWebAppFactory.SignInAsync(browser, "anna", UserSeeder.DemoPassword);
+        await TestWebAppFactory.SignInAsync(browser, "admin", UserSeeder.DemoPassword);
         var demote = await PostAsync(browser, $"/Users/Edit/{id}", $"/Users/Edit/{id}", new()
         {
-            ["Id"] = id.ToString(), ["Username"] = "anna", ["Name"] = "Anna", ["StudyProgram"] = "Web", ["IsAdmin"] = "false"
+            ["Id"] = id.ToString(), ["Username"] = "admin", ["Name"] = "Administrator", ["StudyProgram"] = "Web", ["IsAdmin"] = "false"
         });
         Assert.Equal(HttpStatusCode.OK, demote.StatusCode);
         Assert.Contains("Keep at least one admin account.", await demote.Content.ReadAsStringAsync());

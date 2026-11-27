@@ -25,13 +25,13 @@ dotnet run --project Subapp1-MVC/WebApp.Mvc --launch-profile http
 ```
 2. Open http://localhost:5222
 
-Demo accounts (password 'quest1234'): 'anna', 'beatrice', 'calvin' …
-There is no default admin account for subapp 1.
+Demo accounts (password `quest1234`): `admin` (administrator), `anna`, `beatrice`, `calvin`, …
+An initial admin is seeded automatically when no admin exists. Existing admin accounts keep their passwords.
 
 ### Running the tests
 
 ```bash
-dotnet test Subapp1-MVC/WebApp.Mvc.Tests                               # all 36 tests
+dotnet test Subapp1-MVC/WebApp.Mvc.Tests                               # all 34 tests
 dotnet test Subapp1-MVC/WebApp.Mvc.Tests --filter Category=Positive    # the positive tests
 dotnet test Subapp1-MVC/WebApp.Mvc.Tests --filter Category=Negative    # the negative tests
 ```
@@ -77,8 +77,8 @@ and users) and `anna`, `beatrice`, … (students). Delete `WebAppApi.db` to rese
 | ViewModels | `Subapp1-MVC/WebApp.Mvc/ViewModels` (e.g. `QuestsPageViewModel`, `CreateQuestViewModel`, `PlayQuestViewModel`, `LeaderboardViewModel`) |
 | Validation | Data annotations in `Models` and `ViewModels`, `Models/PasswordRules.cs`, `ValidateQuest` and duplicate checks in controllers on the server; client side with jQuery validation (`Views/Shared/_ValidationScriptsPartial.cshtml`, loaded from `Views/Quests/Quests.cshtml` on the create/edit form and on the Course and User forms), `required` on the login form, and custom checks in the inline script in `Views/Quests/_CreateQuestForm.cshtml` (difficulty and correct option required) |
 | Error handling and logging | `try/catch` around saves in the controllers with `TempData["Error"]` / `ModelState` messages, global handling in `Program.cs`, `ILogger` in `QuestsController`, `CoursesController`, `UsersController`, `AccountController`, `QuestScoringService` and the seeders |
-| Authentication and roles | Cookie auth in `Program.cs`, `Controllers/AccountController.cs`, `Models/AppRoles.cs`; `[Authorize]` on quest create, edit and delete (owner or admin, checked with `CanEditQuest`), `[Authorize(Roles = AppRoles.Admin)]` on Course and User management; role-based navigation in `Views/Shared/_Layout.cshtml`; first admin created through `AccountController.SetupAdmin` (Development, localhost only) |
-| Unit tests (12+, 6 positive and 6 negative) | `Subapp1-MVC/WebApp.Mvc.Tests`: 36 test cases, 8 tagged Positive and 8 tagged Negative (`[Trait("Category", ...)]`), described in `WebApp.Mvc.Tests/README.md` |
+| Authentication and roles | Cookie auth in `Program.cs`, `Controllers/AccountController.cs`, `Models/AppRoles.cs`; `[Authorize]` on quest create, edit and delete (owner or admin, checked with `CanEditQuest`), `[Authorize(Roles = AppRoles.Admin)]` on Course and User management; role-based navigation in `Views/Shared/_Layout.cshtml`; initial admin seeded by `Models/UserSeeder.cs`; existing admin accounts and passwords are preserved |
+| Unit tests (12+, 6 positive and 6 negative) | `Subapp1-MVC/WebApp.Mvc.Tests`: 34 test cases, 8 tagged Positive and 8 tagged Negative (`[Trait("Category", ...)]`), described in `WebApp.Mvc.Tests/README.md` |
 | User experience | Shared layout and navigation in `Views/Shared/_Layout.cshtml`, styling in `wwwroot/css` (`quests.css`, `site.css`), success/error banners via `TempData`, sound feedback on `Views/Quests/Play.cshtml` |
 
 

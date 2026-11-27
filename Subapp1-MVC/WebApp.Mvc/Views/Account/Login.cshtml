@@ -29,13 +29,8 @@
     @if (Env.IsDevelopment())
     {
         <p class="mt-4 text-secondary small">
-            Development only: the demo users (anna, beatrice, calvin, …) use the password
+            Development only: the demo users (admin, anna, beatrice, …) use the password
             <code>@UserSeeder.DemoPassword</code>.
         </p>
     }
 </div>
-
-@if (ViewData["CanSetupAdmin"] is true)
-{
-    <div class="container pb-4"><a asp-action="SetupAdmin">Set up the first admin account</a></div>
-}
