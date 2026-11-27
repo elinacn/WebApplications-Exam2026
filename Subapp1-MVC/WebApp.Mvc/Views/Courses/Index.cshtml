@@ -1,4 +1,4 @@
-@model IEnumerable<Course>
+@model IEnumerable<WebApp.ViewModels.CourseViewModel>
 @{
     ViewData["Title"] = "Courses";
 }
@@ -36,7 +36,7 @@
                     <tr>
                         <td>@item.Code</td>
                         <td>@item.Title</td>
-                        <td>@item.Quests.Count</td>
+                        <td>@item.QuestTitles.Count</td>
                         <td>
                             <a asp-action="Details" asp-route-id="@item.Id">Details</a>
                             @if (User.IsInRole(WebApp.Models.AppRoles.Admin))

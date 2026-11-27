@@ -740,3 +740,18 @@ fieldset[disabled] .quests-play-option.is-wrong:hover {
 .quests-play-code-input {
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
+
+/* Quiz completion follows answered questions, independently of the score. */
+.quests-play-progress {
+  margin: 20px 0;
+}
+
+.quests-play-progress-labels {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 6px 16px;
+  margin-bottom: 8px;
+  color: #b8c2d2;
+  font-size: 0.85rem;
+}

@@ -2,9 +2,8 @@ using Microsoft.AspNetCore.Identity;
 
 namespace WebApp.Models;
 
-// Demo students. Only inserted when the Users table is empty, so users added or
-// deleted through the site are never overwritten. They start with 0 code points;
-// points come only from completing quests (see QuestScoringService).
+// Demo students are inserted only when the Users table is empty.
+// An initial admin is added if none exists, without replacing existing accounts.
 public static class UserSeeder
 {
     // Shared password for the demo users, so the team can sign in as any of them.
@@ -46,6 +45,16 @@ public static class UserSeeder
         {
             context.SaveChanges();
             logger.LogInformation("Set the demo password for {Count} demo users", withoutPassword.Count);
+        }
+
+        // Keep existing admin accounts and passwords. Do not promote a user named admin.
+        if (!context.Users.Any(u => u.IsAdmin || u.Username.ToLower() == "admin"))
+        {
+            var admin = new User { Username = "admin", Name = "Administrator", StudyProgram = "Administration", IsAdmin = true };
+            admin.PasswordHash = hasher.HashPassword(admin, DemoPassword);
+            context.Users.Add(admin);
+            context.SaveChanges();
+            logger.LogInformation("Seeded the initial admin account");
         }
     }
 }

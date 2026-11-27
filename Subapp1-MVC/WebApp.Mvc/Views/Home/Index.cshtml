@@ -1,4 +1,5 @@
-﻿@using WebApp.ViewModels
+@using WebApp.ViewModels
+@model List<QuestCardViewModel>
 @{
     ViewData["Welcome to ####"] = "Home Page";
 
@@ -12,7 +13,7 @@
 
 <div class="home-container">
     <div class="home-grid-3col">
-        <!-- LEFT: Weekly streak and a space for challenges -->
+        <!-- LEFT: Weekly streak and upcoming quests -->
         <div class="home-left-column">
         <aside class="side-card streak-card">
             <div class="side-card-header">
@@ -38,11 +39,32 @@
             </div>
         </aside>
 
-        <section class="side-card home-challenge-card">
-            <div class="side-card-header">
-                <h3>Challenges</h3>
-            </div>
-        </section>
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+            <section class="side-card">
+                <div class="side-card-header">
+                    <h3>Up Next</h3>
+                </div>
+                @if (Model.Count == 0)
+                {
+                    <p class="side-card-subtext">You're all caught up! Explore quests for more.</p>
+                }
+                else
+                {
+                    <ul class="mini-lb-list">
+                        @foreach (var quest in Model)
+                        {
+                            <li>
+                                <a class="mini-lb-item home-next-quest" asp-controller="Quests" asp-action="Play" asp-route-id="@quest.Id">
+                                    <span class="home-next-title">@quest.Title</span>
+                                    <span class="mini-lb-pts">@quest.DifficultyLabel</span>
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                }
+            </section>
+        }
         </div>
 
         <!-- CENTER: Welcome & Stats -->
@@ -73,7 +95,7 @@
             </div>
 
             <p class="site-desc">
-                Level up your coding skills with quests, challenges and compete on the leaderboard! Master your craft and become better than ever before!
+                Level up your coding skills with quests, keep your streak alive and climb the leaderboard! Master your craft and become better than ever before!
             </p>
 
             <div class="quest-invite">

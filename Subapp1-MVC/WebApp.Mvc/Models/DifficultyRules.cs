@@ -3,14 +3,18 @@ namespace WebApp.Models;
 public static class DifficultyRules
 {
     // Accept the old names for imported quests, but always store/display the new names.
-    public static string Normalize(string difficulty) => difficulty.Trim().ToLowerInvariant() switch
+    public static string Normalize(string difficulty)
     {
-        "beginner" or "apprentice" => nameof(Difficulty.Beginner),
-        "intermediate" or "knight" => nameof(Difficulty.Intermediate),
-        "expert" => nameof(Difficulty.Expert),
-        "master" => nameof(Difficulty.Master),
-        _ => throw new ArgumentException("Unknown quest difficulty.", nameof(difficulty))
-    };
+        ArgumentNullException.ThrowIfNull(difficulty);
+        return difficulty.Trim().ToLowerInvariant() switch
+        {
+            "beginner" or "apprentice" => nameof(Difficulty.Beginner),
+            "intermediate" or "knight" => nameof(Difficulty.Intermediate),
+            "expert" => nameof(Difficulty.Expert),
+            "master" => nameof(Difficulty.Master),
+            _ => throw new ArgumentException("Unknown quest difficulty.", nameof(difficulty))
+        };
+    }
 
     public static int GetCompletionXp(string difficulty) => Normalize(difficulty) switch
     {

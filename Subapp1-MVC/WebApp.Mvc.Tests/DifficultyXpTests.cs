@@ -50,6 +50,7 @@ public class DifficultyXpTests
     [Theory]
     [InlineData("apprentice", "Beginner", 10)]
     [InlineData("knight", "Intermediate", 25)]
+    [Trait("Category", "Positive")]
     public void Legacy_difficulties_use_the_new_names_and_rewards(string oldName, string newName, int xp)
     {
         Assert.Equal(newName, DifficultyRules.Normalize(oldName));

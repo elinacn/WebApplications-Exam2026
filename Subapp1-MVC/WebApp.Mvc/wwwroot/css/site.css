@@ -143,8 +143,19 @@ body {
   min-width: 0;
 }
 
-.home-challenge-card {
-  min-height: 160px;
+.home-next-quest {
+  gap: 12px;
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.home-next-quest:hover, .home-next-quest:focus-visible {
+  border-color: #6366f1;
+}
+
+.home-next-title {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .welcome {

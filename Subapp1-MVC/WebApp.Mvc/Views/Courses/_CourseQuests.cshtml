@@ -1,16 +1,16 @@
-@model Course
+@model WebApp.ViewModels.CourseViewModel
 
-<h2 class="h4 mt-4">Quests (@Model.Quests.Count)</h2>
-@if (Model.Quests.Count == 0)
+<h2 class="h4 mt-4">Quests (@Model.QuestTitles.Count)</h2>
+@if (Model.QuestTitles.Count == 0)
 {
     <p>No quests in this course.</p>
 }
 else
 {
     <ul>
-        @foreach (var quest in Model.Quests)
+        @foreach (var title in Model.QuestTitles)
         {
-            <li>@quest.Title</li>
+            <li>@title</li>
         }
     </ul>
 }

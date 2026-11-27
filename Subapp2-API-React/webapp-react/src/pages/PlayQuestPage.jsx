@@ -106,10 +106,17 @@ export default function PlayQuestPage() {
               <span>
                 Question {current + 1} of {questions.length}
               </span>
-              <span>{answeredCount} answered</span>
+              <span aria-live="polite">{answeredCount} of {questions.length} answered</span>
             </div>
-            <div className="progress">
-              <div className="progress-bar" style={{ width: `${((current + 1) / questions.length) * 100}%` }} />
+            <div
+              className="progress"
+              role="progressbar"
+              aria-label="Questions answered"
+              aria-valuemin={0}
+              aria-valuemax={questions.length}
+              aria-valuenow={answeredCount}
+            >
+              <div className="progress-bar" style={{ width: `${(answeredCount / questions.length) * 100}%` }} />
             </div>
             <div className="question-dots" aria-label="Jump to question">
               {questions.map((q, index) => (

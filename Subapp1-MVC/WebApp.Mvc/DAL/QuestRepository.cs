@@ -12,6 +12,15 @@ public class QuestRepository : IQuestRepository
         _db = db;
     }
 
+    public Task<List<Quest>> GetUpNextAsync(int userId) =>
+        _db.Quests.AsNoTracking()
+            .Where(q => !_db.QuestCompletions.Any(c => c.UserId == userId && c.QuestId == q.Id))
+            .OrderBy(q => q.Difficulty == "Beginner" ? 0 : q.Difficulty == "Intermediate" ? 1
+                : q.Difficulty == "Expert" ? 2 : 3)
+            .ThenBy(q => q.Title)
+            .Take(3)
+            .ToListAsync();
+
     public async Task<Quest?> GetByIdAsync(int id) => await _db.Quests.FindAsync(id);
 
     public Task<Quest?> GetWithQuestionsAsync(int id, bool tracking = false)

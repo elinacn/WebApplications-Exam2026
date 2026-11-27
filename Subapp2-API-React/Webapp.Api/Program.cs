@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
@@ -57,15 +58,30 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
             return Task.CompletedTask;
         };
 
-        // Sign out anyone whose user was deleted since they signed in
+        // Check current permissions on every request, including existing logins.
         options.Events.OnValidatePrincipal = async context =>
         {
             var userId = context.Principal?.GetUserId();
             var users = context.HttpContext.RequestServices.GetRequiredService<IUserRepository>();
-            if (userId is null || !await users.ExistsAsync(userId.Value))
+            var user = userId is null ? null : await users.GetByIdAsync(userId.Value);
+            if (user is null)
             {
                 context.RejectPrincipal();
                 await context.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+                return;
+            }
+
+            if (context.Principal?.FindFirstValue(ClaimTypes.Role) != user.Role
+                || context.Principal?.Identity?.Name != user.Name)
+            {
+                var identity = new ClaimsIdentity(new[]
+                {
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                    new Claim(ClaimTypes.Name, user.Name),
+                    new Claim(ClaimTypes.Role, user.Role)
+                }, CookieAuthenticationDefaults.AuthenticationScheme);
+                context.ReplacePrincipal(new ClaimsPrincipal(identity));
+                context.ShouldRenew = true;
             }
         };
     });

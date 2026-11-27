@@ -4,6 +4,7 @@ namespace WebApp.DAL;
 
 public interface IQuestRepository
 {
+    Task<List<Quest>> GetUpNextAsync(int userId);
     Task<Quest?> GetByIdAsync(int id);
     Task<Quest?> GetWithQuestionsAsync(int id, bool tracking = false);
     Task<bool> ExistsAsync(int id);

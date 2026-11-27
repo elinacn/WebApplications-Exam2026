@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApp.Models;
 using WebApp.DAL;
+using WebApp.ViewModels;
 
 namespace WebApp.Controllers;
 
@@ -22,7 +23,7 @@ public class CoursesController : Controller
     public async Task<IActionResult> Index()
     {
         var courses = await _courses.GetAllAsync();
-        return View(courses);
+        return View(courses.Select(CourseViewModel.FromEntity).ToList());
     }
 
     // READ: single, with its quests
@@ -36,17 +37,17 @@ public class CoursesController : Controller
             _logger.LogWarning("Course {CourseId} not found", id);
             return NotFound();
         }
-        return View(course);
+        return View(CourseViewModel.FromEntity(course));
     }
 
     // CREATE
     [Authorize(Roles = AppRoles.Admin)]
-    public IActionResult Create() => View(new Course());
+    public IActionResult Create() => View(new CourseViewModel());
 
     [HttpPost]
     [ValidateAntiForgeryToken]
     [Authorize(Roles = AppRoles.Admin)]
-    public async Task<IActionResult> Create([Bind("Code,Title,Description")] Course course)
+    public async Task<IActionResult> Create([Bind("Code,Title,Description")] CourseViewModel course)
     {
         Normalize(course);
         await CheckDuplicatesAsync(course);
@@ -55,8 +56,9 @@ public class CoursesController : Controller
 
         try
         {
-            await _courses.AddAsync(course);
-            _logger.LogInformation("Created course {CourseId} ({Code})", course.Id, course.Code);
+            var entity = new Course { Code = course.Code, Title = course.Title, Description = course.Description };
+            await _courses.AddAsync(entity);
+            _logger.LogInformation("Created course {CourseId} ({Code})", entity.Id, entity.Code);
             TempData["Success"] = "Course created.";
             return RedirectToAction(nameof(Index));
         }
@@ -74,13 +76,13 @@ public class CoursesController : Controller
     {
         if (id is null) return BadRequest();
         var course = await _courses.GetByIdAsync(id.Value);
-        return course is null ? NotFound() : View(course);
+        return course is null ? NotFound() : View(CourseViewModel.FromEntity(course));
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
     [Authorize(Roles = AppRoles.Admin)]
-    public async Task<IActionResult> Edit(int id, [Bind("Id,Code,Title,Description")] Course course)
+    public async Task<IActionResult> Edit(int id, [Bind("Id,Code,Title,Description")] CourseViewModel course)
     {
         if (id != course.Id) return BadRequest();
 
@@ -124,7 +126,7 @@ public class CoursesController : Controller
     {
         if (id is null) return BadRequest();
         var course = await _courses.GetWithQuestsAsync(id.Value);
-        return course is null ? NotFound() : View(course);
+        return course is null ? NotFound() : View(CourseViewModel.FromEntity(course));
     }
 
     [HttpPost, ActionName("Delete")]
@@ -151,7 +153,7 @@ public class CoursesController : Controller
     }
 
     // Codes are stored trimmed and upper-case, so "web-101" and "WEB-101 " are the same code
-    private static void Normalize(Course course)
+    private static void Normalize(CourseViewModel course)
     {
         course.Code = course.Code?.Trim().ToUpperInvariant() ?? string.Empty;
         course.Title = course.Title?.Trim() ?? string.Empty;
@@ -159,12 +161,12 @@ public class CoursesController : Controller
     }
 
     // Unique code is also enforced by the database; unique title avoids two identical-looking courses
-    private async Task CheckDuplicatesAsync(Course course)
+    private async Task CheckDuplicatesAsync(CourseViewModel course)
     {
         if (await _courses.CodeExistsAsync(course.Code, course.Id))
-            ModelState.AddModelError(nameof(Course.Code), "A course with this code already exists.");
+            ModelState.AddModelError(nameof(CourseViewModel.Code), "A course with this code already exists.");
 
         if (await _courses.TitleExistsAsync(course.Title, course.Id))
-            ModelState.AddModelError(nameof(Course.Title), "A course with this title already exists.");
+            ModelState.AddModelError(nameof(CourseViewModel.Title), "A course with this title already exists.");
     }
 }

@@ -18,6 +18,12 @@ public static class QuestValidator
         if (DifficultyRules.Normalize(form.Difficulty) is null)
             errors["Difficulty"] = "Choose a difficulty.";
 
+        if (form.Questions is null)
+        {
+            errors["Questions"] = "Add at least one question.";
+            return errors;
+        }
+
         if (form.Questions.Count == 0)
             errors["Questions"] = "Add at least one question.";
         else if (form.Questions.Count > MaxQuestions)
@@ -27,6 +33,12 @@ public static class QuestValidator
         {
             var question = form.Questions[i];
             var prefix = $"Questions[{i}]";
+
+            if (question is null)
+            {
+                errors[prefix] = "A question cannot be empty.";
+                continue;
+            }
 
             switch (question.Type)
             {
@@ -53,6 +65,12 @@ public static class QuestValidator
 
     private static void ValidateChoice(QuestionFormDto question, string prefix, Dictionary<string, string> errors)
     {
+        if (question.Options is null || question.Options.Any(o => o is null))
+        {
+            errors[$"{prefix}.Options"] = "Provide valid answer options.";
+            return;
+        }
+
         var filled = question.Options.Where(o => !string.IsNullOrWhiteSpace(o.Text)).ToList();
 
         if (question.Options.Count > MaxOptions)
@@ -67,7 +85,7 @@ public static class QuestValidator
 
     private static void ValidateAnswers(QuestionFormDto question, string prefix, Dictionary<string, string> errors)
     {
-        var answers = DtoMapper.CleanAnswers(question.AcceptedAnswers);
+        var answers = DtoMapper.CleanAnswers(question.AcceptedAnswers ?? []);
         if (answers.Count == 0)
             errors[$"{prefix}.AcceptedAnswers"] = "Add at least one accepted answer.";
         else if (string.Join("\n", answers).Length > 1000)

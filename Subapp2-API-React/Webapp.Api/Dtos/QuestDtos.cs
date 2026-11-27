@@ -102,7 +102,8 @@ public record QuizResultDto(
     int BestScore,
     int TotalXp,
     bool Saved,
-    List<QuestionResultDto> Questions);
+    List<QuestionResultDto> Questions,
+    string? StreakError = null);
 
 public record QuestionResultDto(
     int QuestionId,

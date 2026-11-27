@@ -87,7 +87,9 @@
         @for (var i = 0; i < Model.NewQuest.Questions.Count; i++)
         {
             var question = Model.NewQuest.Questions[i];
-            var isMultipleChoice = question.Type != "freeText";
+            var isMultipleChoice = question.Type == "multipleChoice";
+            var isFreeText = question.Type == "freeText";
+            var isCode = question.Type == "code";
 
             <fieldset class="quests-create-block" data-question>
                 <div class="quests-q-header">
@@ -104,6 +106,7 @@
                         <select asp-for="NewQuest.Questions[i].Type" class="js-question-type">
                             <option value="multipleChoice">Multiple choice</option>
                             <option value="freeText">Free text</option>
+                            <option value="code">Code</option>
                         </select>
                         <span asp-validation-for="NewQuest.Questions[i].Type" class="quests-validation"></span>
                     </label>
@@ -153,7 +156,7 @@
                 </div>
 
                 @* ---------- Free text ---------- *@
-                <div class="js-panel-free-text" hidden="@(isMultipleChoice)">
+                <div class="js-panel-free-text" hidden="@(!isFreeText)">
                     <p class="quests-create-label">Correct answers</p>
                     <label class="quests-create-check">
                         <input asp-for="NewQuest.Questions[i].CaseSensitive" />
@@ -178,21 +181,23 @@
                     <button type="button" class="quests-reset js-add-answer">Add another correct answer</button>
                 </div>
 
-                <div class="quests-create-grid">
+                <div class="quests-create-grid js-panel-code" hidden="@(!isCode)">
                     <label class="quests-create-field quests-create-field-wide">
-                        startCode (code questions: mark the blank with ____)
+                        Start code (mark exactly one blank with ____)
                         <textarea asp-for="NewQuest.Questions[i].StartCode" rows="5" class="quests-create-code" spellcheck="false"
                                   placeholder="public static int sum(int a, int b) {&#10;    return ____;&#10;}"></textarea>
                         <span asp-validation-for="NewQuest.Questions[i].StartCode" class="quests-validation"></span>
                     </label>
                     <label class="quests-create-field quests-create-field-wide">
-                        acceptedCode (one accepted fill-in per line)
+                        Accepted code (one accepted fill-in per line)
                         <textarea asp-for="NewQuest.Questions[i].AcceptedCode" rows="3" class="quests-create-code" spellcheck="false"
                                   placeholder="a + b&#10;b + a"></textarea>
                         <span asp-validation-for="NewQuest.Questions[i].AcceptedCode" class="quests-validation"></span>
                     </label>
+                </div>
+
+                <div class="quests-create-grid">
                     <label class="quests-create-field quests-create-field-wide">
-                        explaination
                         Explanation (optional)
                         <textarea asp-for="NewQuest.Questions[i].Explaination" rows="2"></textarea>
                     </label>
@@ -258,8 +263,8 @@
                 // Every multiple choice question needs at least one ticked correct option
                 const blocks = Array.from(form.querySelectorAll("[data-question]"));
                 const missingIndex = blocks.findIndex(function (block) {
-                    const isFreeText = block.querySelector(".js-question-type").value === "freeText";
-                    return !isFreeText && !block.querySelector(".js-option-correct:checked");
+                    const isMultipleChoice = block.querySelector(".js-question-type").value === "multipleChoice";
+                    return isMultipleChoice && !block.querySelector(".js-option-correct:checked");
                 });
                 if (missingIndex !== -1) {
                     e.preventDefault();
@@ -335,15 +340,17 @@
                 const typeSelect = block.querySelector(".js-question-type");
                 const choicePanel = block.querySelector(".js-panel-multiple-choice");
                 const textPanel = block.querySelector(".js-panel-free-text");
+                const codePanel = block.querySelector(".js-panel-code");
                 const optionList = block.querySelector(".js-option-list");
                 const addOptionBtn = block.querySelector(".js-add-option");
                 const answerList = block.querySelector(".js-answer-list");
                 const addAnswerBtn = block.querySelector(".js-add-answer");
 
                 function showType() {
-                    const isFreeText = typeSelect.value === "freeText";
-                    choicePanel.hidden = isFreeText;
-                    textPanel.hidden = !isFreeText;
+                    const type = typeSelect.value;
+                    choicePanel.hidden = type !== "multipleChoice";
+                    textPanel.hidden = type !== "freeText";
+                    codePanel.hidden = type !== "code";
                 }
 
                 // Keeps names Options[0], Options[1]... gap-free so the server can bind them
