@@ -18,6 +18,8 @@
 
 .play-progress .labels {
   display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
   justify-content: space-between;
   font-size: 0.85rem;
   color: var(--muted);

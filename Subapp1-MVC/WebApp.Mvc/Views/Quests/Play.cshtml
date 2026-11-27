@@ -2,6 +2,8 @@
 @model PlayQuestViewModel
 @{
     ViewData["Title"] = Model.Title;
+    var answeredCount = Model.Questions.Count(q => q.Type is "freeText" or "code"
+        ? !string.IsNullOrWhiteSpace(q.TextAnswer) : q.SelectedKeys.Count > 0);
 }
 
 <link rel="stylesheet" href="~/css/quests.css" asp-append-version="true" />
@@ -49,14 +51,28 @@
                 </div>
             }
 
+            @if (!Model.Submitted)
+            {
+                <div class="quests-play-progress">
+                    <div class="quests-play-progress-labels">
+                        <span data-quiz-current>Question 1 of @Model.Questions.Count</span>
+                        <span data-quiz-count aria-live="polite">@answeredCount of @Model.Questions.Count answered</span>
+                    </div>
+                    <div class="quest-progress" data-quiz-progress role="progressbar" aria-label="Questions answered"
+                         aria-valuemin="0" aria-valuemax="@Model.Questions.Count" aria-valuenow="@answeredCount">
+                        <span class="quest-progress-fill" style="width: @(Model.Questions.Count == 0 ? 0 : answeredCount * 100 / Model.Questions.Count)%"></span>
+                    </div>
+                </div>
+            }
+
             <form class="quests-create-form" method="post" asp-controller="Quests" asp-action="Play" asp-route-id="@Model.Id">
                 @for (var i = 0; i < Model.Questions.Count; i++)
                 {
                     var q = Model.Questions[i];
 
-                    <fieldset class="quests-create-block" disabled="@Model.Submitted">
+                    <fieldset class="quests-create-block" data-quiz-question disabled="@Model.Submitted">
                         <div class="quests-q-header">
-                            <h4 class="quests-q-title">Question @(i + 1)</h4>
+                            <h4 class="quests-q-title">Question @(i + 1) of @Model.Questions.Count</h4>
                             @if (Model.Submitted)
                             {
                                 <span class="quests-play-badge @(q.IsCorrect ? "is-correct" : "is-wrong")">
@@ -146,8 +162,39 @@
     </div>
 </div>
 
-// sound effects script to choose which file should play for outcome
+@* Quiz progress and result sounds. *@
 @section Scripts {
+    <script>
+        (() => {
+            const progress = document.querySelector('[data-quiz-progress]');
+            if (!progress) return;
+
+            const form = document.querySelector('.quests-create-form');
+            const questions = [...form.querySelectorAll('[data-quiz-question]')];
+            const count = document.querySelector('[data-quiz-count]');
+            const current = document.querySelector('[data-quiz-current]');
+            const update = () => {
+                const answered = questions.filter(question =>
+                    [...question.querySelectorAll('input[type="text"], input[type="radio"], input[type="checkbox"]')]
+                        .some(input => input.type === 'text' ? input.value.trim().length > 0 : input.checked)
+                ).length;
+                const label = `${answered} of ${questions.length} answered`;
+                if (count.textContent !== label) count.textContent = label;
+                progress.setAttribute('aria-valuenow', answered);
+                progress.querySelector('.quest-progress-fill').style.width =
+                    `${questions.length ? answered / questions.length * 100 : 0}%`;
+            };
+
+            form.addEventListener('input', update);
+            form.addEventListener('change', update);
+            form.addEventListener('focusin', event => {
+                const index = questions.indexOf(event.target.closest('[data-quiz-question]'));
+                if (index >= 0) current.textContent = `Question ${index + 1} of ${questions.length}`;
+            });
+            window.addEventListener('pageshow', update);
+            update();
+        })();
+    </script>
     <script>
         (()=>{
             const el = document.querySelector('[data-quest-outcome]');
