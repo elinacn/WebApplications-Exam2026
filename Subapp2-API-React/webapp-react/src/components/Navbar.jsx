@@ -37,7 +37,7 @@ export default function Navbar() {
     <header className={`navbar ${menuOpen ? 'open' : ''}`}>
       <nav className="navbar-inner" aria-label="Main">
         <Link className="navbar-logo" to="/" onClick={closeMenus}>
-          <img className="navbar-logo-img" src="/images/Logo.png" alt="" />
+          <img className="navbar-logo-img" src="/images/quest-logo.svg" alt="" />
           CodeQuest
         </Link>
 
