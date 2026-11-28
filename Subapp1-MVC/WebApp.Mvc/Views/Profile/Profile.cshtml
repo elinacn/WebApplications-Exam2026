@@ -3,7 +3,7 @@
     ViewData["Title"] = "Profile";
 }
 
-@* Profile details and progress use the signed-in user. Achievements are still placeholders. *@
+@* Profile details and progress use the signed-in user. Achievements reflect saved quiz, XP and activity data. *@
 <link rel="stylesheet" href="~/css/profile.css" asp-append-version="true" />
 
 <main class="profile-container">
@@ -38,21 +38,23 @@
 
     <section class="profile-stats">
         <div class="profile-stat-card"><strong>@Model.QuizzesCompleted</strong><span>Quizzes completed</span></div>
-        <div class="profile-stat-card"><strong>3</strong><span>Achievements earned</span></div>
+        <div class="profile-stat-card"><strong>@Model.AchievementsEarned</strong><span>Achievements earned</span></div>
     </section>
 
     <section class="profile-achievements">
         <h2 id="profile-achievements-title">Achievements</h2>
         <div class="profile-achievement-grid">
-            <article class="profile-achievement-card">
-                <h3>First quest</h3><p>Complete your first quiz.</p>
-            </article>
-            <article class="profile-achievement-card">
-                <h3>On a roll</h3><p>Build a 5 day streak.</p>
-            </article>
-            <article class="profile-achievement-card">
-                <h3>Level up</h3><p>Reach level 2.</p>
-            </article>
+            @foreach (var achievement in Model.Achievements)
+            {
+                <article class="profile-achievement-card @(achievement.IsUnlocked ? "is-unlocked" : "")">
+                    <h3>@achievement.Title</h3>
+                    <p>@achievement.Description</p>
+                    <p class="profile-achievement-status">@(achievement.IsUnlocked ? "Earned" : "Locked")</p>
+                    <progress class="profile-progress-bar" value="@achievement.Progress" max="@achievement.Target"
+                              aria-label="@achievement.Title progress">@achievement.Progress / @achievement.Target</progress>
+                    <p>@achievement.Progress / @achievement.Target</p>
+                </article>
+            }
         </div>
     </section>
 

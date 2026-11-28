@@ -8,6 +8,7 @@ import { useApiData } from '../hooks/useApiData'
 import { usePageTitle } from '../hooks/usePageTitle'
 import { statsService } from '../services/statsService'
 import './HomePage.css'
+import './ProfilePage.css'
 
 const dateFormat = new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' })
 
@@ -19,7 +20,7 @@ export default function ProfilePage() {
   if (loading && !profile) return <Spinner />
   if (!profile) return <ErrorMessage error={error} onRetry={reload} />
 
-  const { user, streak, week, recentActivity } = profile
+  const { user, streak, week, recentActivity, achievements } = profile
 
   return (
     <>
@@ -56,6 +57,24 @@ export default function ProfilePage() {
           <h3>This week</h3>
         </div>
         <WeekTracker week={week} />
+      </section>
+
+      <section className="profile-achievements">
+        <div className="card-header">
+          <h2>Achievements</h2>
+          <span className="muted">{achievements.filter((a) => a.isUnlocked).length} of {achievements.length} earned</span>
+        </div>
+        <div className="profile-achievement-grid">
+          {achievements.map((achievement) => (
+            <article key={achievement.title} className={`card profile-achievement-card ${achievement.isUnlocked ? 'is-unlocked' : ''}`}>
+              <h3>{achievement.title}</h3>
+              <p className="muted small">{achievement.description}</p>
+              <p className="profile-achievement-status">{achievement.isUnlocked ? 'Earned' : 'Locked'}</p>
+              <progress value={achievement.progress} max={achievement.target} aria-label={`${achievement.title} progress`} />
+              <p className="muted small">{achievement.progress} / {achievement.target}</p>
+            </article>
+          ))}
+        </div>
       </section>
 
       <h2>Recent quests</h2>

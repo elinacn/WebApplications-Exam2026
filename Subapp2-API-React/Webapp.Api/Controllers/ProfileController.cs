@@ -4,6 +4,7 @@ using WebApp.Api.DAL;
 using WebApp.Api.Dtos;
 using WebApp.Api.Extensions;
 using WebApp.Api.Services;
+using WebApp.Api.Models;
 
 namespace WebApp.Api.Controllers;
 
@@ -40,6 +41,9 @@ public class ProfileController : ControllerBase
             user.ToDto(),
             await _streaks.GetStreakAsync(userId),
             await _streaks.GetCurrentWeekAsync(userId),
-            recent);
+            recent,
+            AchievementRules.GetAchievements(user.QuizzesCompleted, user.Points,
+                    await _progress.GetActivityDatesAsync(userId))
+                .Select(a => new AchievementDto(a.Title, a.Description, a.Progress, a.Target)).ToList());
     }
 }
