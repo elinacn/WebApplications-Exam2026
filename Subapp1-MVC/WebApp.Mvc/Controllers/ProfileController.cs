@@ -4,6 +4,7 @@ using WebApp.Extensions;
 using WebApp.DAL;
 using WebApp.Services;
 using WebApp.ViewModels;
+using WebApp.Models;
 
 namespace WebApp.Controllers;
 
@@ -37,6 +38,9 @@ public class ProfileController : Controller
             Username = user.Username,
             TotalXp = user.Points,
             QuizzesCompleted = user.QuizzesCompleted,
+            Achievements = AchievementRules.GetAchievements(user.QuizzesCompleted, user.Points,
+                    await _progress.GetActivityDatesAsync(user.Id.ToString()))
+                .Select(a => new AchievementViewModel(a.Title, a.Description, a.Progress, a.Target)).ToList(),
             Streak = await _streakService.GetStreakAsync(user.Id.ToString()),
             RecentActivity = recent
                 .Select(c => new ProfileActivityViewModel

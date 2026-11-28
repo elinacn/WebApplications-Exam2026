@@ -160,7 +160,7 @@
 }
 .profile-achievement-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 18px;
     margin-top: 18px;
 }
@@ -168,6 +168,25 @@
     text-align: center;
     padding: 25px 16px;
     border: 1px solid #354159;
+}
+.profile-achievement-card.is-unlocked {
+    border-color: #fbbf24;
+    background: var(--profile-panel);
+}
+.profile-achievement-card .profile-achievement-status {
+    font-weight: 600;
+}
+.profile-achievement-card.is-unlocked .profile-achievement-status {
+    color: #fbbf24;
+}
+.profile-achievement-card .profile-progress-bar {
+    margin-top: 12px;
+    height: 6px;
+}
+@media (min-width: 641px) and (max-width: 900px) {
+    .profile-achievement-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 }
 .profile-achievement-card h3 {
     font-size: 16px;

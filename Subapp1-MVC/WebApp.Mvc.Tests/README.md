@@ -33,7 +33,7 @@ In VS Code, the tests also appear in the Testing panel (C# Dev Kit).
 
 ## Unit-test count
 
-The report's 12 distinct unit tests are: `CodeAnswerCheckerTests` (1 positive, 2 negative), `PasswordRulesTests` (1 positive, 1 negative), `QuestFormMapperTests` (2 positive), `ClaimsPrincipalExtensionTests` (1 positive, 1 negative), `UserTests` (1 positive, 1 negative), and `DifficultyRulesTests` (1 negative). Total: 6 positive and 6 negative, without counting different theory inputs as separate methods. `DifficultyXpTests` adds 2 legacy-name theory cases, giving 14 isolated unit-test cases overall. SQLite and HTTP integration tests provide additional coverage.
+The report's 12 distinct unit tests are: `CodeAnswerCheckerTests` (1 positive, 2 negative), `PasswordRulesTests` (1 positive, 1 negative), `QuestFormMapperTests` (2 positive), `ClaimsPrincipalExtensionTests` (1 positive, 1 negative), `UserTests` (1 positive, 1 negative), and `DifficultyRulesTests` (1 negative). Total: 6 positive and 6 negative, without counting different theory inputs as separate methods. Two additional legacy-difficulty theory cases bring the isolated total to 14 cases. SQLite and HTTP integration tests provide additional coverage.
 
 ## How the integration tests work
 

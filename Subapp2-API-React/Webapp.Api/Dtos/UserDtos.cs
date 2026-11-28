@@ -57,6 +57,12 @@ public class LoginDto
 
 public record LeaderboardEntryDto(int Rank, int UserId, string Name, string StudyProgram, int Points, int QuizzesCompleted);
 
-public record ProfileDto(UserDto User, int Streak, List<bool> Week, List<ActivityDto> RecentActivity);
+public record ProfileDto(UserDto User, int Streak, List<bool> Week, List<ActivityDto> RecentActivity,
+    List<AchievementDto> Achievements);
+
+public record AchievementDto(string Title, string Description, int Progress, int Target)
+{
+    public bool IsUnlocked => Progress >= Target;
+}
 
 public record ActivityDto(int QuestId, string QuestTitle, int BestScore, int MaxScore, int Attempts, DateTime LastCompletedAt);

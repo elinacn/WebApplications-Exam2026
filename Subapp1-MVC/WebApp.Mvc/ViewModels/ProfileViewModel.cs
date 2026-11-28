@@ -8,6 +8,8 @@ public class ProfileViewModel
     public int Streak { get; set; }
     public int TotalXp { get; set; }
     public int QuizzesCompleted { get; set; }
+    public List<AchievementViewModel> Achievements { get; set; } = [];
+    public int AchievementsEarned => Achievements.Count(a => a.IsUnlocked);
 
     // Existing code points are XP. Each 100 XP advances one level, starting at level 1.
     public const int XpPerLevel = 100;
@@ -31,4 +33,9 @@ public class ProfileActivityViewModel
     public DateTime CompletedAtOslo => TimeZoneInfo.ConvertTimeFromUtc(
         DateTime.SpecifyKind(CompletedAtUtc, DateTimeKind.Utc),
         TimeZoneInfo.FindSystemTimeZoneById("Europe/Oslo"));
+}
+
+public record AchievementViewModel(string Title, string Description, int Progress, int Target)
+{
+    public bool IsUnlocked => Progress >= Target;
 }
